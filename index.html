@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<!-- saved from url=(0031)http://localhost:9090/user/join -->
+<html lang="ko"><!-- head 영역 시작 --><!-- layout으로 잡히는 모든 html의 head 영역을 config.html로 대체" --><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>dorandoran</title>
+		
+		
+		<!-- 모든 페이지에서 사용할 공통 css링크 -->
+		<!-- thymeleaf에서 링크를 걸 때는 @{}로 사용 -->
+		<link rel="stylesheet" href="./dorandoran_files/style.css">
+
+		<!-- 현재 페이지 내에서 개별적으로 사용할 css링크 -->
+		
+	  <link rel="stylesheet" href="./dorandoran_files/join.css">
+  
+		
+		<!-- 모든 페이지에서 사용할 공통 js링크 -->
+		<script src="./dorandoran_files/jquery-3.6.1.min.js.다운로드"></script>
+		
+		<!-- 현재 페이지 내에서 개별적으로 사용할 js링크 -->
+		
+	  <script>
+		  $(function(){
+			  //아이디 중복체크 확인 여부
+			  var checkId = false;
+			  
+			  //비밀번호가 확인과 일치하는지
+			  var pwCheck = false;
+			  
+			  //닉네임 중복체크 확인 여부
+			  var checkNick = false;
+			  
+			  $("#pwCheckResult").hide();
+			  
+			  //아이디 중복체크
+			  $("#checkBtn").on("click", function(){
+				  if($("#userId").val()!= ""){
+					  
+				  
+					  $.ajax({
+						  url: "/user/idCheck",
+						  type: "post",
+						  data: {
+						  userId: $("#userId").val()
+						 },
+						  success: function(obj){
+							  console.log(obj);
+							  
+							  if(obj.item.msg == 'duplicatedId'){
+								  alert("이미 사용 중인 아이디입니다");
+								  $("#userId").focus();
+							  }else{
+								  if(confirm("사용 가능한 아이디입니다."+
+								  $("#userId").val() + "를(을) 사용하시겠습니까?")){
+									  checkId = true;
+									  $("#checkBtn").attr("disabled", true);
+								  }
+							  }
+						  },
+						  error: function(e){
+							  console.log(e);
+						  }
+						 
+					  })
+		  		  }
+			  });
+			//id 중복체크 후 다시 id를 변경했을 때
+			$("#userId").on("change", function() {
+				checkId = false;
+				$("#checkBtn ").attr("disabled", false);
+				});
+				
+			//닉네임 중복채크
+			$("#nickCheckBtn").on("click",function(){
+				if($("#userNick").val()!=""){
+					$.ajax({
+						url:"/user/nickCheck",
+						type:"post",
+						data:{
+							userNick:$("#userNick").val()
+						},
+						success:function(obj){
+							console.log(obj);
+							if(obj.item.msg =='duplicatedNick'){
+								alert("이미 사용 중인 닉네임입니다.");
+								$("#userNick").focus();
+							}else{
+								if(confirm("사용 가능한 아이디입니다."+
+								$("#userNick").val()+"를(을) 사용하시겠습니까?")){
+									checkNick= true;
+									$("#nickCheckBtn").attr("disabled", true);
+								}
+							}
+						},
+						error: function(e){
+							console.log(e);
+						}
+					})
+				}
+			});
+			//닉네임 중복체크 후 다시 변경하였을 때
+			$("#userNick").on("change",function(){
+				checkNick = false;
+				$("#nickCheckBtn").attr("disabled",false);
+			});
+
+			//비밀번호 확인 후 재설정
+			if($("#userPw").val() == $("#userPwCheck").val()){
+				pwCheck = true;
+				$("#pwCheckResult").css("color", "blue");
+				$("#pwCheckResult").text("비밀번호가 일치합니다");
+				} else {
+					pwCheck = false;
+					$("#pwCheckResult").css("color", "red");
+					$("#pwCheckResult").text("비밀번호가 일치하지 않습니다");
+				}
+				
+			//submit 클릭 시
+			$("#joinForm").on("submit", function(e) {
+				if(!checkId){
+					e.preventDefault();
+					alert("ID 중복체크를해 해주세요");
+					$("#userId").focus();
+					return;
+				}
+				//비밀번호와 비밀번호 확인이 다를 경우
+				if(!pwCheck){
+					e.preventDefault();
+					alert("비밀번호가 일치하지 않습니다");
+					$("#userPwCheck").focus();
+					return;
+				}
+				$.ajax({
+					url:'/user/join',
+					type: 'post',
+					success: function(obj){
+						console.log(obj);
+						if(obj.item.joinMsg == 'joinSuccess'){
+							alert("회원가입에 성공하였습니다.");
+							window.location.href="/user/login";
+						}else{
+							alert("회원가입에 실패하였습니다.");
+							return;
+						}
+					},
+					error: function(e){
+						console.log(e);
+					}
+				}) 
+			});
+		  });
+		  
+	  </script>
+  
+	</head>
+	<!-- head 영역 끝 -->
+	
+	<body>
+		<header>
+		<div style="text-align: center;">
+ 		<div class="header-oqG">
+		  <div class="frame-1-L4W">
+		    <a href="http://localhost:9090/" class="item--FhG">함께해요</a>
+		    <a href="http://localhost:9090/" class="item--xra">공유해요</a>
+		    <a href="http://localhost:9090/" class="item--VLi">도와줘요</a>
+		  </div>
+	<img class="item-01-3-1-1pr" src="./dorandoran_files/-ib8.png" width="200px" height="200px">
+	  <div class="auto-group-1eug-1yG">
+	    <div class="frame-3-A5U">
+	      <div class="mainbtn-GPQ">
+	        <div class="rectangle-CH4">
+	        </div>
+	        <a href="http://localhost:9090/user/login" class="login-imC">LOGIN</a>
+	      </div>
+	      <div class="mainbtn-pJS">
+	        <div class="rectangle-M3U">
+	        </div>
+	        <a href="http://localhost:9090/user/join" class="login-5EN">JOIN</a>
+	      </div>
+	      <img class="flat-color-icons-like-BYJ" src="./dorandoran_files/flat-color-icons-like.png">
+	    </div>
+	    <div class="group-2-7B4">
+	      <a href="http://localhost:9090/" class="item--TEv">놀아줘요</a>
+	      <a href="http://localhost:9090/" class="item--mWW">도란장터</a>
+	      <a href="http://localhost:9090/" class="item--gNa">고객센터</a>
+	    </div>
+	  </div>
+		</div>  
+  	</div></header>
+		
+		<div>
+		<div class="join-D6e">
+		<form id="joinForm" action="http://localhost:9090/user/join" method="post">
+  <p class="join-Lwx">JOIN</p>
+  <div class="join-input-section">
+	  <div class="auto-group-rjqn-Sk6">
+	    <p class="item--WV4 font-red">*필수입력사항</p>
+	  </div>
+	  <div class="line-3-bWW">
+	  </div>
+	    <div class="auto-group-euft-fFU">
+	      <p class="item--zHk">
+	        <span class="item--zHk-sub-0">아이디 </span>
+	        <span class="item--zHk-sub-1 font-red">*</span>
+	      </p>
+	      <div class="join-userid-section">
+		      <input type="text" id="userId" name="userId" class="rectangle-52-AdU" required=""> <!-- name 또는 id = userId 설정 -->
+		      <button type="button" id="checkBtn" class="checkBtn">중복체크</button>
+	      </div>
+	    </div>
+	    <div class="auto-group-fchg-TUA">
+	      <p class="item--U6S">
+	        <span class="item--U6S-sub-0">비밀번호 </span>
+	        <span class="item--U6S-sub-1 font-red">*</span>
+	      </p>
+	
+	      <input type="password" id="userPw" name="userPw" class="rectangle-53-V9x" required="">
+	    </div>
+	<!--    <div class="idcheckbtn-owL">
+	      <div class="rectangle-53-Ytv">
+	      </div>
+	      <div class="item--fyY">중복체크</div>
+	    </div>-->
+	  <div class="auto-group-q4e6-KoC">
+	    <p class="item--ro8">
+	      <span class="item--ro8-sub-0">비밀번호 확인 </span>
+	      <span class="item--ro8-sub-1 font-red">*</span>
+	    </p>
+	    <input type="password" id="userPwCheck" name="userPwCheck" class="rectangle-54-E2z" required="">
+	  </div>
+	  <div class="auto-group-auhp-kGE">
+	    <p class="item--g9t">
+	      <span class="item--g9t-sub-0">닉네임 </span>
+	      <span class="item--g9t-sub-1 font-red">*</span>
+	    </p>
+      	<div class="join-usernick-section">
+	      <input type="text" id="userNick" name="userNick" class="rectangle-56-HQa" required=""> <!-- name 또는 id = userId 설정 -->
+	      <button type="button" id="nickCheckBtn" class="nickCheckBtn">중복체크</button>
+      	</div>
+	  </div>
+	  <div class="auto-group-auhp-kGE">
+		  <p class="item--CnS">
+		    <span class="item--CnS-sub-0">지역 </span>
+		    <span class="item--CnS-sub-1 font-red">*</span>
+		  </p>
+		  <input type="text" id="userLoc" name="userLoc" class="rectangle-56" required="">
+	  </div>
+	  <div class="auto-group-izrk-ygi">
+	    <p class="item--72E">
+	      <span class="item--72E-sub-0">이메일 </span>
+	      <span class="item--72E-sub-1 font-red">*</span>
+	    </p>
+	    <input type="email" id="userEmail" name="userEmail" class="rectangle-55-JsQ" required="">
+	  </div>
+	  <div class="auto-group-izrk-ygi">
+		  <p class="item--2YW">성별</p>
+		  <div class="genmangirl">
+		  	<input type="radio" id="userGen" name="userGen" value="M">남성
+		  	<input type="radio" id="userGen" name="userGen" value="F">여성
+		  </div>
+	  </div>
+	  <div class="auto-group-entz-vtn">
+	    <p class="item--Tti">나이</p>
+        <input type="text" id="userAge" name="userAge" class="rectangle-57-Xdg">
+	  </div>
+	  <div class="auto-group-nm">
+		  <p class="item-nm">이름</p>
+		  <input type="text" id="userNm" name="userNm" class="rectangle-nm" required="">
+	  </div>
+	  <div class="auto-group-tel">
+		  <p class="item-tel">전화번호</p>
+		  <input type="text" id="userTel" name="userTel" class="rectangle-tel" required="">
+	  </div>
+	  <div class="line-2-yEE">
+	  </div>
+	  <div class="auto-group-entz-vtn">
+	  	<button type="submit" id="joinBtn" class="joinBtn">가입하기</button>
+	  </div>
+  </div>
+<!--  <div class="auto-group-3qan-9f4"> <!--가입하기 버튼-->
+<!--    <div class="rectangle-98-HmG">
+    </div>
+    <div class="item--qGz">가입하기</div>
+  				</div>-->
+  			</form>
+		</div>
+		</div>
+		
+		<footer>
+			<div>
+				<p>ⓒEZEN아카데미</p>
+			</div>
+		</footer>
+	
+	
+</body></html>
